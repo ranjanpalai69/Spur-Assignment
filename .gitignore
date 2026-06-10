@@ -1,0 +1,13 @@
+# Claude Code internal — never commit
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Top-level node_modules (sub-packages have their own .gitignore)
+node_modules/
