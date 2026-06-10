@@ -1,0 +1,12 @@
+# Exclude heavy/private dirs from EB deployment bundle
+# dist/ is intentionally NOT listed — pre-built JS is shipped to EB
+node_modules/
+data/
+*.db
+*.db-shm
+*.db-wal
+*.log
+.env
+.env.local
+src/
+tsconfig.json
