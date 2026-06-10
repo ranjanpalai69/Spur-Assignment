@@ -75,7 +75,7 @@ export default function MessageBubble({ message }: { message: Message }) {
 
   if (isUser) {
     return (
-      <div className="flex justify-end items-end gap-2 animate-slide-up group">
+      <div className="flex justify-end items-end gap-2 animate-msg-in group">
         <div className="flex flex-col items-end gap-1.5 max-w-[78%] sm:max-w-[70%]">
           <div
             className="text-white px-4 py-3 rounded-2xl rounded-br-md text-sm leading-relaxed"
@@ -96,7 +96,7 @@ export default function MessageBubble({ message }: { message: Message }) {
   }
 
   return (
-    <div className="flex items-end gap-3 animate-slide-up group">
+    <div className="flex items-end gap-3 animate-msg-in group">
       {/* Avatar */}
       <div
         className="flex items-center justify-center w-8 h-8 rounded-full

@@ -6,6 +6,7 @@ import {
   faWandMagicSparkles,
   faClock,
   faMagnifyingGlass,
+  faCommentDots,
 } from '@fortawesome/free-solid-svg-icons';
 import { Fa } from './ui/Fa';
 import { api } from '../services/api';
@@ -59,6 +60,7 @@ export default function Sidebar({
   onNewChat,
   onClose,
   refreshTrigger,
+  isDark,
 }: SidebarProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,17 +89,20 @@ export default function Sidebar({
 
   const grouped = groupByDate(filtered);
 
+  // Scrollbar class: dark gets white-tinted thumb, light gets slate thumb
+  const scrollbarClass = isDark ? 'scrollbar-sidebar-dark' : 'scrollbar-sidebar-light';
+
   return (
-    <aside
-      className="flex flex-col h-full w-72 shrink-0 select-none"
-      style={{ background: '#0f0e17' }}
-    >
+    <aside className="flex flex-col h-full w-72 shrink-0 select-none
+                      bg-white dark:bg-[#0f0e17]
+                      border-r border-slate-200 dark:border-white/[0.05]">
+
       {/* ── Brand ── */}
-      <div className="px-4 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <div className="px-4 pt-5 pb-4 border-b border-slate-100 dark:border-white/[0.05]">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
             <div
-              className="relative flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
+              className="relative flex items-center justify-center w-9 h-9 rounded-xl shrink-0 text-white"
               style={{
                 background: 'linear-gradient(135deg, #6366f1 0%, #7c3aed 100%)',
                 boxShadow: '0 4px 14px rgba(99,102,241,0.35)',
@@ -106,12 +111,14 @@ export default function Sidebar({
               <Fa icon={faRobot} size={16} className="text-white" />
               <span
                 className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400"
-                style={{ border: '2px solid #0f0e17' }}
+                style={{ border: isDark ? '2px solid #0f0e17' : '2px solid #ffffff' }}
               />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white leading-none tracking-tight">ShopEase</p>
-              <p className="text-[10px] mt-0.5 font-medium tracking-wide" style={{ color: '#818cf8' }}>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white leading-none tracking-tight">
+                ShopEase
+              </p>
+              <p className="text-[10px] mt-0.5 font-medium tracking-wide text-indigo-500 dark:text-indigo-400">
                 Support Chat
               </p>
             </div>
@@ -120,8 +127,9 @@ export default function Sidebar({
           {/* Close — mobile only */}
           <button
             onClick={onClose}
-            className="md:hidden p-1.5 rounded-lg transition-colors"
-            style={{ color: 'rgba(255,255,255,0.3)' }}
+            className="md:hidden p-1.5 rounded-lg transition-colors
+                       text-slate-400 hover:text-slate-600 hover:bg-slate-100
+                       dark:text-white/30 dark:hover:text-white/70 dark:hover:bg-white/5"
             aria-label="Close sidebar"
           >
             <Fa icon={faXmark} size={16} />
@@ -145,53 +153,56 @@ export default function Sidebar({
       </div>
 
       {/* ── Search ── */}
-      <div className="px-3 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-        <div
-          className="flex items-center gap-2 px-3 py-2 rounded-lg"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)' }}
-        >
-          <Fa icon={faMagnifyingGlass} size={12} style={{ color: 'rgba(255,255,255,0.22)', flexShrink: 0 }} />
+      <div className="px-3 py-3 border-b border-slate-100 dark:border-white/[0.04]">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg
+                        bg-slate-100 border border-slate-200
+                        dark:bg-white/5 dark:border-white/[0.06]">
+          <Fa icon={faMagnifyingGlass} size={12}
+            className="text-slate-400 dark:text-white/25 shrink-0" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search conversations…"
-            className="flex-1 bg-transparent text-xs focus:outline-none"
-            style={{ color: 'rgba(255,255,255,0.65)' }}
+            className="flex-1 bg-transparent text-xs focus:outline-none
+                       text-slate-700 dark:text-white/65
+                       placeholder:text-slate-400 dark:placeholder:text-white/25"
           />
           {search && (
-            <button onClick={() => setSearch('')} style={{ color: 'rgba(255,255,255,0.3)' }}>
+            <button onClick={() => setSearch('')}
+              className="text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/60">
               <Fa icon={faXmark} size={11} />
             </button>
           )}
         </div>
       </div>
 
-      {/* ── List ── */}
-      <nav className="flex-1 overflow-y-auto scrollbar-dark py-1">
+      {/* ── Conversation list ── */}
+      <nav className={`flex-1 overflow-y-auto py-1 ${scrollbarClass}`}>
         {loading ? (
           <div className="px-3 space-y-1 pt-2">
             {[72, 55, 68, 80, 48].map((w, i) => (
               <div key={i} className="flex items-center gap-2.5 px-2 py-2.5">
-                <span className="w-1.5 h-1.5 rounded-full shrink-0"
-                  style={{ background: 'rgba(255,255,255,0.07)' }} />
-                <span className="h-2 rounded-full"
-                  style={{ width: `${w}%`, background: 'rgba(255,255,255,0.07)' }} />
+                <span className="w-1.5 h-1.5 rounded-full shrink-0
+                                 bg-slate-200 dark:bg-white/[0.07]" />
+                <span className="h-2 rounded-full bg-slate-200 dark:bg-white/[0.07]"
+                  style={{ width: `${w}%` }} />
               </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 mt-12"
-            style={{ color: 'rgba(255,255,255,0.18)' }}>
-            <Fa icon={faPlus} size={20} />
+          <div className="flex flex-col items-center justify-center gap-2 mt-12
+                          text-slate-300 dark:text-white/20">
+            <Fa icon={faCommentDots} size={22} />
             <p className="text-xs">{search ? 'No results found' : 'No conversations yet'}</p>
           </div>
         ) : (
           grouped.map(([label, items]) => (
             <div key={label}>
               <div className="flex items-center gap-1.5 px-4 pt-3 pb-1.5">
-                <Fa icon={faClock} size={9} style={{ color: 'rgba(255,255,255,0.16)' }} />
-                <span className="text-[9px] font-bold uppercase tracking-widest"
-                  style={{ color: 'rgba(255,255,255,0.16)' }}>
+                <Fa icon={faClock} size={9}
+                  className="text-slate-300 dark:text-white/[0.16]" />
+                <span className="text-[9px] font-bold uppercase tracking-widest
+                                 text-slate-400 dark:text-white/[0.16]">
                   {label}
                 </span>
               </div>
@@ -201,32 +212,36 @@ export default function Sidebar({
                   <button
                     key={conv.id}
                     onClick={() => onSelectConversation(conv.id)}
-                    className="group flex items-center gap-2.5 py-2.5 px-3 rounded-xl
-                               transition-all duration-150 text-left hover:bg-white/[0.04]"
-                    style={{
-                      width: 'calc(100% - 16px)',
-                      margin: '1px 8px',
-                      background: isActive
-                        ? 'linear-gradient(135deg,rgba(99,102,241,0.14) 0%,rgba(139,92,246,0.07) 100%)'
-                        : undefined,
-                      border: isActive
-                        ? '1px solid rgba(99,102,241,0.2)'
-                        : '1px solid transparent',
-                    }}
+                    className={[
+                      'group flex items-center gap-2.5 py-2.5 px-3 rounded-xl',
+                      'transition-all duration-150 text-left',
+                      isActive
+                        ? 'bg-indigo-50 border border-indigo-200/70 dark:bg-indigo-500/[0.14] dark:border-indigo-500/20'
+                        : 'border border-transparent hover:bg-slate-50 dark:hover:bg-white/[0.04]',
+                    ].join(' ')}
+                    style={{ width: 'calc(100% - 16px)', margin: '1px 8px' }}
                   >
                     <span
                       className="w-1.5 h-1.5 rounded-full shrink-0"
-                      style={{ background: isActive ? '#818cf8' : 'rgba(255,255,255,0.16)' }}
-                    />
-                    <span className="flex-1 text-xs truncate"
                       style={{
-                        color: isActive ? '#c7d2fe' : 'rgba(255,255,255,0.42)',
+                        background: isActive
+                          ? '#6366f1'
+                          : isDark ? 'rgba(255,255,255,0.16)' : '#cbd5e1',
+                      }}
+                    />
+                    <span
+                      className="flex-1 text-xs truncate"
+                      style={{
+                        color: isActive
+                          ? isDark ? '#a5b4fc' : '#4f46e5'
+                          : isDark ? 'rgba(255,255,255,0.42)' : '#64748b',
                         fontWeight: isActive ? 500 : 400,
-                      }}>
+                      }}
+                    >
                       {conv.title ?? 'New Conversation'}
                     </span>
-                    <span className="shrink-0 text-[10px] tabular-nums"
-                      style={{ color: 'rgba(255,255,255,0.2)' }}>
+                    <span className="shrink-0 text-[10px] tabular-nums
+                                     text-slate-400 dark:text-white/20">
                       {timeAgo(conv.updatedAt)}
                     </span>
                   </button>
@@ -238,19 +253,19 @@ export default function Sidebar({
       </nav>
 
       {/* ── Footer ── */}
-      <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <div className="px-4 py-3 border-t border-slate-100 dark:border-white/[0.05]">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center w-5 h-5 rounded-md shrink-0
                           text-white text-[8px] font-bold"
             style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
             AI
           </div>
-          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.22)' }}>
+          <p className="text-[10px] text-slate-400 dark:text-white/25">
             GPT-4o mini · Encrypted
           </p>
           <div className="ml-auto flex items-center gap-1 shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-emerald-400 font-medium">Online</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-soft" />
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Online</span>
           </div>
         </div>
       </div>

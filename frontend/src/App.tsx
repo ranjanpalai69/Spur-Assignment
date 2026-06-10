@@ -43,7 +43,7 @@ export default function App() {
   }, [startNewChat, triggerSidebarRefresh]);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#0f0e17' }}>
+    <div className="flex h-screen overflow-hidden bg-slate-100 dark:bg-[#0f0e17]">
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div

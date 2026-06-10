@@ -3,9 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  html,
-  body,
-  #root {
+  html, body, #root {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -16,97 +14,94 @@
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
-  /* Sidebar scrollbar (always dark) */
-  .scrollbar-dark::-webkit-scrollbar {
-    width: 4px;
+  /* ── Sidebar scrollbar — light mode ── */
+  .scrollbar-sidebar-light {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(203,213,225,0.8) transparent;
   }
-  .scrollbar-dark::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .scrollbar-dark::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.08);
+  .scrollbar-sidebar-light::-webkit-scrollbar       { width: 4px; }
+  .scrollbar-sidebar-light::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-sidebar-light::-webkit-scrollbar-thumb {
+    background: rgba(203,213,225,0.8);
     border-radius: 99px;
   }
-  .scrollbar-dark::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.16);
+  .scrollbar-sidebar-light::-webkit-scrollbar-thumb:hover {
+    background: rgba(148,163,184,0.9);
   }
 
-  /* Chat scrollbar (adapts to theme) */
+  /* ── Sidebar scrollbar — dark mode ── */
+  .scrollbar-sidebar-dark {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.08) transparent;
+  }
+  .scrollbar-sidebar-dark::-webkit-scrollbar       { width: 4px; }
+  .scrollbar-sidebar-dark::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-sidebar-dark::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+  }
+  .scrollbar-sidebar-dark::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.16);
+  }
+
+  /* ── Chat message area scrollbar ── */
   .scrollbar-chat {
     scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+    scrollbar-color: rgba(148,163,184,0.3) transparent;
   }
-  .scrollbar-chat::-webkit-scrollbar {
-    width: 5px;
-  }
-  .scrollbar-chat::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  .scrollbar-chat::-webkit-scrollbar       { width: 5px; }
+  .scrollbar-chat::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-chat::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
+    background: rgba(148,163,184,0.3);
     border-radius: 99px;
   }
   .dark .scrollbar-chat::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.4);
+    background: rgba(100,116,139,0.4);
   }
 
-  /* Hide scrollbar */
-  .scrollbar-none {
-    scrollbar-width: none;
-  }
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
+  /* ── Hide scrollbar completely ── */
+  .scrollbar-none                          { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar       { display: none; }
 }
 
 @layer components {
-  /* Light mode chat background */
+  /* Light mode chat background — subtle indigo dot-grid */
   .chat-bg {
     background-color: #f5f7ff;
-    background-image: radial-gradient(rgba(99, 102, 241, 0.07) 1.5px, transparent 1.5px);
+    background-image: radial-gradient(rgba(99,102,241,0.07) 1.5px, transparent 1.5px);
     background-size: 26px 26px;
   }
 
   /* Dark mode chat background */
   .dark .chat-bg {
     background-color: #020617;
-    background-image: radial-gradient(rgba(99, 102, 241, 0.04) 1.5px, transparent 1.5px);
+    background-image: radial-gradient(rgba(99,102,241,0.04) 1.5px, transparent 1.5px);
     background-size: 26px 26px;
   }
+
+  /* Light skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(90deg, #e8edf5 0%, #f4f7fc 50%, #e8edf5 100%);
+    background-size: 1200px 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+    border-radius: 10px;
+  }
+
+  /* Dark skeleton shimmer */
+  .dark .skeleton {
+    background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+    background-size: 1200px 100%;
+  }
 }
 
-/* Typing indicator dots — used with inline animation-delay in TypingIndicator */
+/* ── Typing indicator dot animation ── */
 @keyframes bounceDot {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.35;
-  }
-  30% {
-    transform: translateY(-7px);
-    opacity: 1;
-  }
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.35; }
+  30%           { transform: translateY(-7px); opacity: 1; }
 }
 
-/* Skeleton shimmer */
+/* ── Shimmer for skeleton loading ── */
 @keyframes shimmer {
-  0% {
-    background-position: -600px 0;
-  }
-  100% {
-    background-position: 600px 0;
-  }
-}
-
-.skeleton {
-  background: linear-gradient(90deg, #e8edf5 0%, #f4f7fc 50%, #e8edf5 100%);
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
-  border-radius: 10px;
-}
-
-.dark .skeleton {
-  background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
-  background-size: 1200px 100%;
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
 }

@@ -39,21 +39,23 @@ export default function InputBar({ onSend, isLoading }: InputBarProps) {
     }
   };
 
-  const borderColor = isOverLimit
-    ? 'rgba(248,113,113,0.7)'
+  const wrapperBorder = isOverLimit
+    ? '#f87171'
     : focused
-      ? 'rgba(99,102,241,0.45)'
+      ? 'rgba(99,102,241,0.5)'
       : undefined;
 
-  const focusShadow = focused && !isOverLimit ? '0 0 0 3px rgba(99,102,241,0.1)' : 'none';
+  const wrapperShadow = focused && !isOverLimit
+    ? '0 0 0 3px rgba(99,102,241,0.1), 0 2px 8px rgba(0,0,0,0.04)'
+    : '0 1px 4px rgba(0,0,0,0.04)';
 
   return (
     <div className="shrink-0 px-4 py-4 bg-white dark:bg-slate-900
                     border-t border-slate-100 dark:border-slate-800">
       <div
-        className="rounded-2xl bg-white dark:bg-slate-800 transition-all duration-200
+        className="rounded-2xl bg-slate-50 dark:bg-slate-800 transition-all duration-200
                    border border-slate-200 dark:border-slate-700"
-        style={{ borderColor, boxShadow: focusShadow }}
+        style={{ borderColor: wrapperBorder, boxShadow: wrapperShadow }}
       >
         {/* Textarea */}
         <textarea
@@ -69,7 +71,7 @@ export default function InputBar({ onSend, isLoading }: InputBarProps) {
           className="w-full bg-transparent resize-none px-4 pt-3.5 pb-1 text-sm
                      text-slate-800 dark:text-slate-100
                      placeholder:text-slate-400 dark:placeholder:text-slate-500
-                     focus:outline-none disabled:opacity-50 max-h-40 leading-relaxed scrollbar-none"
+                     focus:outline-none disabled:opacity-60 max-h-40 leading-relaxed scrollbar-none"
         />
 
         {/* Toolbar */}
@@ -79,9 +81,10 @@ export default function InputBar({ onSend, isLoading }: InputBarProps) {
               type="button"
               tabIndex={-1}
               title="Emoji"
-              className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500
+              className="p-1.5 rounded-lg transition-all duration-150 active:scale-90
+                         text-slate-400 dark:text-slate-500
                          hover:text-slate-600 dark:hover:text-slate-300
-                         hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                         hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               <Fa icon={faFaceSmile} size={15} />
             </button>
@@ -89,9 +92,10 @@ export default function InputBar({ onSend, isLoading }: InputBarProps) {
               type="button"
               tabIndex={-1}
               title="Attach file"
-              className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500
+              className="p-1.5 rounded-lg transition-all duration-150 active:scale-90
+                         text-slate-400 dark:text-slate-500
                          hover:text-slate-600 dark:hover:text-slate-300
-                         hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                         hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               <Fa icon={faPaperclip} size={15} />
             </button>
@@ -99,8 +103,10 @@ export default function InputBar({ onSend, isLoading }: InputBarProps) {
 
           <div className="flex items-center gap-3">
             {remaining < 300 && (
-              <span className="text-[11px] tabular-nums font-medium"
-                style={{ color: isOverLimit ? '#ef4444' : '#f59e0b' }}>
+              <span
+                className="text-[11px] tabular-nums font-medium transition-colors"
+                style={{ color: isOverLimit ? '#ef4444' : '#f59e0b' }}
+              >
                 {remaining}
               </span>
             )}
@@ -108,30 +114,34 @@ export default function InputBar({ onSend, isLoading }: InputBarProps) {
               onClick={handleSend}
               disabled={!canSend}
               aria-label="Send message"
-              className="flex items-center justify-center w-8 h-8 rounded-xl
-                         transition-all duration-150 active:scale-95"
+              className={[
+                'flex items-center justify-center w-8 h-8 rounded-xl',
+                'transition-all duration-150',
+                canSend
+                  ? 'active:scale-90 hover:scale-105'
+                  : 'opacity-40 cursor-not-allowed',
+              ].join(' ')}
               style={
                 canSend
                   ? {
                       background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
                       color: 'white',
-                      boxShadow: '0 2px 10px rgba(99,102,241,0.35)',
+                      boxShadow: '0 2px 10px rgba(99,102,241,0.4)',
                     }
                   : {
-                      background: 'var(--tw-bg-opacity)',
-                      cursor: 'not-allowed',
+                      background: 'transparent',
+                      border: '1.5px solid currentColor',
+                      color: '#94a3b8',
                     }
               }
             >
               {isLoading ? (
-                <span className="w-3.5 h-3.5 rounded-full border-2 animate-spin"
-                  style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} />
-              ) : (
-                <Fa
-                  icon={faPaperPlane}
-                  size={13}
-                  className={canSend ? 'text-white' : 'text-slate-400 dark:text-slate-500'}
+                <span
+                  className="w-3.5 h-3.5 rounded-full border-2 animate-spin-fast"
+                  style={{ borderColor: 'rgba(255,255,255,0.25)', borderTopColor: 'white' }}
                 />
+              ) : (
+                <Fa icon={faPaperPlane} size={13} />
               )}
             </button>
           </div>
